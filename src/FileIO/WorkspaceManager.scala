@@ -7,7 +7,12 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 object WorkspaceManager {
-  val userConfigPath = System.getProperty("user.home") + PathUtils.separator +".notimpressed"
+  val userConfigDir = System.getProperty("user.home") +
+    PathUtils.separator +".notimpressed"
+  val userConfigFile = System.getProperty("user.home") +
+    PathUtils.separator +".notimpressed/.conf"
+  val impressFile = System.getProperty("user.home") +
+    PathUtils.separator +".notimpressed/impress-mini.js"
 
   def createNewWorkSpace(dirPath: Path): Option[Workspace] = {
     val newPath: Path = Files.createDirectory(dirPath)
@@ -27,13 +32,15 @@ object WorkspaceManager {
 
   def locateDefaultWorkspace(): Option[String] = {
     try {
-      val realPath: Path = Paths.get(userConfigPath).toRealPath()
-      val defaultWS = Files.readAllLines(realPath, StandardCharsets.UTF_8)
+      val configFilePath = Paths.get(userConfigFile).toRealPath()
+      val defaultWS = Files.readAllLines(configFilePath, StandardCharsets.UTF_8)
       if (defaultWS.size() > 0) Some(defaultWS.get(0)) else None
     } catch {
       case ioe: IOException => {
-        val path = Paths.get(userConfigPath)
-        Files.createFile(path)
+        //should really only happen on first runs
+        //todo: detect if just missing file or dir
+        Files.createDirectory(Paths.get(userConfigDir))
+        Files.createFile(Paths.get(userConfigFile))
         None
       }
     }
@@ -41,7 +48,7 @@ object WorkspaceManager {
 
   def saveAsDefault(path: Path) = {
     try {
-      val realPath:Path = Paths.get(userConfigPath).toRealPath()
+      val realPath:Path = Paths.get(userConfigFile).toRealPath()
       Files.write(realPath, path.toString.getBytes, StandardOpenOption.WRITE)
     } catch {
       case e: Exception => println("Unable to save as default workspace.")

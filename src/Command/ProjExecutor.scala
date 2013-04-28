@@ -34,8 +34,7 @@ object ProjExecutor {
           else
             Context.curPres.get.addStep(args-("item"))
         case "css" =>
-          if (args.contains("name") &&
-            args("name").length > 0)
+          if (args.contains("name") && args("name").length > 0)
             Context.curPres.get.cssRules += (
               new CSSClass(args("name"),
                 args-("name", "item")))
@@ -112,10 +111,21 @@ object ProjExecutor {
       listEverything()
     }else{
       if(args.size == 1){
-        if(args.contains("step"))
-          Context.curPres.get.getStep(args("step"))
-        else if(args.contains("css"))
-          Context.curPres.get.getStep(args("css"))
+        if(args.contains("step")){
+          val step = Context.curPres.get
+            .getStep(args("step"))
+          step match {
+            case Some(s) => s.tell()
+            case None => println("No step by that accessor found.")
+          }
+        }else if(args.contains("css")){
+          val cssClass = Context.curPres.get
+            .getCSSClass(args("css"))
+          cssClass match {
+            case Some(c) => c.tell()
+            case None => println("No class by that accessor found.")
+          }
+        }
         else
           println("Wrong usage. Please only specify a step or css.")
       } else

@@ -2,7 +2,8 @@ package Entities
 
 import collection.mutable.HashMap
 
-class CSSClass(var name:String, attributes:HashMap[String, String]) {
+class CSSClass(var name:String,
+               attributes:HashMap[String, String]) {
 
   def set(avPair:(String,String)){
     attributes+=(avPair)

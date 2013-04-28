@@ -3,6 +3,7 @@ package EnvStructs
 import java.nio.file.Path
 import Entities.{CSSClass, Step}
 import scala.collection.mutable._
+import scala.annotation.tailrec
 
 //todo: add logic to rename project directory on title change
 //todo: robustness, item names must be valid (according to w3c)
@@ -79,11 +80,17 @@ class Project (val homePath:Path,
    * @return The index of the step if exists else -1.
    */
   private def getStepIndex(id:String):Int = {
-    //todo: would there be use cases with a terabillion of steps?
-    for(i <- 0 until steps.size
-        if steps(i).attributes.contains("id") &&
-          steps(i).attributes("id") == id) i
-    -1
+
+    @tailrec
+    def findStep(id:String, curIndex:Int):Int = {
+      if(curIndex == steps.size) -1
+      else if(steps(curIndex).attributes.contains("id")
+        && steps(curIndex).attributes("id") == id)
+        curIndex
+      else
+        findStep(id, curIndex+1)
+    }
+    findStep(id, 0)
   }
 
   /**
@@ -92,10 +99,7 @@ class Project (val homePath:Path,
    * @return Some(css class) else None.
    */
   def getCSSClass(classname:String):Option[CSSClass] = {
-    for(cssClass <- cssRules if cssClass.name == classname)
-      Some(cssClass)
-    println("No css class by name \"" + classname + "\" found.")
-    None
+    cssRules.find(cssClass => cssClass.name == classname)
   }
 
   /**
@@ -137,12 +141,20 @@ class Project (val homePath:Path,
 
   /**
    * Returns the html of this presentation
-   * as string when committing.
+   * as string when committing. Support for user defined head links
+   * in future maybe.
    */
   def html():String = {
-    var str = "<div id=\"impress\">" + System.lineSeparator()
+    val head = "<!doctype html><html><head>" +
+      "<link href=\"notimpressed.css\" rel=\"stlesheet\"></head>" +
+      "<body class=\"impress-not-supported\">"
+    val rest = "<script src=\"impress-mini.js\"></script>" +
+               "<script>impress().init();</script>" +
+               "</body></html>"
+    var impressBody = "<div id=\"impress\">" + System.lineSeparator()
     for(step <- steps)
-      str+=("\t"+step.toHTMLString + System.lineSeparator())
-    str+"</div>"
+      impressBody+=("\t"+step.toHTMLString + System.lineSeparator())
+    impressBody+="</div>"
+    head+impressBody+rest
   }
 }

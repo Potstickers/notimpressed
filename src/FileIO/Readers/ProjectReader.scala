@@ -20,10 +20,10 @@ object ProjectReader {
       /* todo: Robustness - create new files for missing files. */
       while (itor.hasNext) {
         val path = itor.next()
-        if (path.endsWith("notimpressed.pres"))
-          pres = ProjectParser.parsePres(path)
-        else
-          css = ProjectParser.parseCSSRules(path)
+        path.endsWith("notimpressed.pres") match {
+          case true => pres = ProjectParser.parsePres(path)
+          case false => css = ProjectParser.parseCSSRules(path)
+        }
       }
       dirStream.close()
       Some(new Project(projPath,pres._1,pres._2,css))

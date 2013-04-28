@@ -4,6 +4,13 @@ import FileIO.WorkspaceManager
 import java.nio.file.Paths
 import FileIO.Readers.WorkspaceReader
 
+/**
+ * Context object. Tracks the current state of the program.
+ * Main => User has not opened any projects.
+ * Proj => User has opened a project.
+ * Initialized at start of program. Heck, all objects are.
+ * If you're a dev, and wondering what happens at all. Start here.
+ */
 object Context {
   var currentState = States.Main
   var curPres:Option[Project] = None
