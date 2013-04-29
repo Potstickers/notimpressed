@@ -5,7 +5,7 @@ import EnvStructs._
 import java.nio.file._
 import java.nio.charset._
 import collection.JavaConversions._
-import FileIO.{PathUtils, WorkspaceManager}
+import FileIO.{PathUtils, WorkspaceUtils}
 
 object WorkspaceReader {
 
@@ -28,11 +28,11 @@ object WorkspaceReader {
       case nsfe:NoSuchFileException => {
         println("No such directory. Create as new? yes : no")
         if (readLine() == "yes") {
-          WorkspaceManager.createNewWorkSpace(wsDir)
+          WorkspaceUtils.createNewWorkSpace(wsDir)
         } else None
       }
       case nsee:NoSuchElementException => {
-        WorkspaceManager.convertToWorkspace(wsDir)
+        WorkspaceUtils.convertToWorkspace(wsDir)
       }
       case _:Throwable => {
         println("Something went wrong.")

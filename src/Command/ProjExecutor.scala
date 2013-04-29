@@ -4,6 +4,7 @@ import EnvStructs.{States, Context}
 import FileIO.Writers.ProjectWriter
 import Entities.CSSClass
 import collection.mutable._
+import FileIO.ProjectUtils
 
 /**
  * Command executor when in Proj state.
@@ -22,6 +23,10 @@ object ProjExecutor {
     }
   }
 
+  /**
+   * Adds a new item (css class or step)
+   * @param args The attributes of the item
+   */
   private def handleNew(args:HashMap[String,String]) = {
     if(args.contains("item")){
       args("item") match{
@@ -89,9 +94,19 @@ object ProjExecutor {
       }
     }
   }
+
+  /**
+   * Generates the html of this project and copies over the
+   * impress-mini.js file if needed.
+   */
   private def handleCommit() {
     ProjectWriter.writePresHTML(Context.curPres.get)
+    ProjectUtils.copyOverImpress(Context.curPres.get.homePath)
   }
+
+  /**
+   * Saves all changes and returns to main state.
+   */
   private def handleClose() {
     ProjectWriter.write(Context.curPres.get)
     Context.currentState = States.Main

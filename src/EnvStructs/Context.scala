@@ -1,6 +1,6 @@
 package EnvStructs
 
-import FileIO.WorkspaceManager
+import FileIO.WorkspaceUtils
 import java.nio.file.Paths
 import FileIO.Readers.WorkspaceReader
 
@@ -15,13 +15,13 @@ object Context {
   var currentState = States.Main
   var curPres:Option[Project] = None
   var curWorkspace: Option[Workspace] = {
-    val pathToWS = WorkspaceManager.locateDefaultWorkspace()
+    val pathToWS = WorkspaceUtils.locateDefaultWorkspace()
     pathToWS match {
       case None => {
         println("Workspace not found. Would you like to designate one now? yes:no")
         if (readLine() == "yes") {
           val path = Paths.get(Console.readLine("Enter path: "))
-          WorkspaceManager.createNewWorkSpace(path)
+          WorkspaceUtils.createNewWorkSpace(path)
         } else None
       }
       case Some(x) => {

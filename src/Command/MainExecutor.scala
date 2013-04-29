@@ -1,7 +1,7 @@
 package Command
 
 import collection.mutable.HashMap
-import FileIO.{PathUtils, ProjectManager, WorkspaceManager}
+import FileIO.{PathUtils, ProjectUtils, WorkspaceUtils}
 import FileIO.Readers.{ProjectReader, WorkspaceReader}
 import EnvStructs.{States, Context}
 import java.nio.file.{Paths, Files, Path}
@@ -28,7 +28,7 @@ object MainExecutor {
   private def createNew(name: String, wsPath: Path) {
     val projPath = PathUtils.toFullProjPath(name, wsPath.toString)
     Context.curWorkspace.get.addProject(projPath)
-    Context.curPres = ProjectManager.createNewProject(name,projPath)
+    Context.curPres = ProjectUtils.createNewProject(name,projPath)
     Context.currentState = States.Proj
   }
 
@@ -79,7 +79,7 @@ object MainExecutor {
     if(Context.curWorkspace.isDefined)
       Context.curWorkspace.get.homeString
     else{
-      val defaultWS = WorkspaceManager.locateDefaultWorkspace()
+      val defaultWS = WorkspaceUtils.locateDefaultWorkspace()
       if(defaultWS.isDefined)
         defaultWS.get
       else{

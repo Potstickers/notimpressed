@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
-object WorkspaceManager {
+object WorkspaceUtils {
   val userConfigDir = System.getProperty("user.home") +
     PathUtils.separator +".notimpressed"
   val userConfigFile = System.getProperty("user.home") +

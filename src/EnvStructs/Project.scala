@@ -1,13 +1,12 @@
 package EnvStructs
 
-import java.nio.file.Path
 import Entities.{CSSClass, Step}
 import scala.collection.mutable._
 import scala.annotation.tailrec
 
 //todo: add logic to rename project directory on title change
 //todo: robustness, item names must be valid (according to w3c)
-class Project (val homePath:Path,
+class Project (val homePath:String,
                var title:String,
                val steps:ArrayBuffer[Step],
                val cssRules:ArrayBuffer[CSSClass]) {

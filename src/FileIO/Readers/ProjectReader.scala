@@ -5,14 +5,16 @@ import java.nio.file.{NotDirectoryException, Files, Paths}
 import Entities.{CSSClass, Step}
 import scala.collection.mutable._
 import java.io.IOException
-import FileIO.{PathUtils, ProjectManager}
+import FileIO.{PathUtils, ProjectUtils}
 import Parser.ProjectParser
 
 object ProjectReader {
   def read(path: String): Option[Project] = {
-    val projPath = Paths.get(PathUtils.normalizePath(path))
+    val normPath = PathUtils.normalizePath(path)
+    val projPath = Paths.get(normPath)
     try {
-      val dirStream = Files.newDirectoryStream(projPath.toRealPath(), "notimpressed.*")
+      val dirStream = Files.newDirectoryStream(projPath.toRealPath(),
+        "notimpressed.*")
       val itor = dirStream.iterator()
       //todo: refactor to use case classes + recursion
       var pres:(String,ArrayBuffer[Step]) = null
@@ -26,7 +28,7 @@ object ProjectReader {
         }
       }
       dirStream.close()
-      Some(new Project(projPath,pres._1,pres._2,css))
+      Some(new Project(normPath,pres._1,pres._2,css))
     }catch{
       case nde:NotDirectoryException => {
         println("Not a valid project directory.")
@@ -35,9 +37,9 @@ object ProjectReader {
       case ioe:IOException => {
         val answer = readLine("Project not found. Would you like to create as new? yes:no")
         if (answer == "yes")
-          ProjectManager.createNewProject(
+          ProjectUtils.createNewProject(
             projPath.getFileName.toString,
-            projPath.toString)
+            normPath)
         else None
       }
       case _:Throwable => {

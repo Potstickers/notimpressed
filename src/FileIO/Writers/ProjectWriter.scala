@@ -8,7 +8,7 @@ object ProjectWriter {
 
   def write(proj:Project){
     //todo: write only when modified
-    val homePathString = proj.homePath.toString
+    val homePathString = proj.homePath
     val presFile = Paths.get(homePathString+
       PathUtils.normalizePath("/notimpressed.pres"))
     val cssFile = Paths.get(homePathString+
@@ -18,7 +18,7 @@ object ProjectWriter {
   }
 
   def writePresHTML(proj:Project){
-    val homePathString = proj.homePath.toString
+    val homePathString = proj.homePath
     val htmlFile = Paths.get(homePathString+
       PathUtils.normalizePath("/generatedSnip.html"))
     Files.write(htmlFile, proj.html().getBytes)
