@@ -16,12 +16,15 @@ object ProjectUtils {
   }
 
   def convertToProject(name:String, pathString:String):Option[Project] = {
-    val cssFile = Paths.get(PathUtils.normalizePath(pathString + "/notimpressed.css"))
-    val presFile = Paths.get(PathUtils.normalizePath(pathString + "/notimpressed.pres"))
+    val cssFile = Paths.get(PathUtils.normalizePath(pathString
+      + "/notimpressed.css"))
+    val presFile = Paths.get(PathUtils.normalizePath(pathString
+      + "/notimpressed.pres"))
     try{
       Files.createFile(cssFile)
       val presPath = Files.createFile(presFile)
-      val titleAsBytes = ("title:"+name+'\n').getBytes(StandardCharsets.UTF_8)
+      val titleAsBytes = ("title:"+name+'\n')
+        .getBytes(StandardCharsets.UTF_8)
       Files.write(presPath,titleAsBytes, StandardOpenOption.WRITE)
       //todo: copy over impress.js from user directory here
       Some(new Project(pathString, name,

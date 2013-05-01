@@ -8,7 +8,17 @@ import java.io.IOException
 import FileIO.{PathUtils, ProjectUtils}
 import Parser.ProjectParser
 
+/**
+ * Project reader. Handles reading of project.
+ */
 object ProjectReader {
+  /**
+   * Reads a project by looking in directory provided by path.
+   * Handles cases of invalid project directories and nonexisting
+   * directories.
+   * @param path The path of the project directory.
+   * @return the read Project on success, None otherwise.
+   */
   def read(path: String): Option[Project] = {
     val normPath = PathUtils.normalizePath(path)
     val projPath = Paths.get(normPath)
@@ -22,7 +32,8 @@ object ProjectReader {
       /* todo: Robustness - create new files for missing files. */
       while (itor.hasNext) {
         val path = itor.next()
-        path.endsWith("notimpressed.pres") match {
+        path.getFileName.toString
+          .endsWith("pres") match {
           case true => pres = ProjectParser.parsePres(path)
           case false => css = ProjectParser.parseCSSRules(path)
         }

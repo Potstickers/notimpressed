@@ -145,7 +145,7 @@ class Project (val homePath:String,
    */
   def html():String = {
     val head = "<!doctype html><html><head>" +
-      "<link href=\"notimpressed.css\" rel=\"stlesheet\"></head>" +
+      "<link href=\"notimpressed.css\" rel=\"stylesheet\"></head>" +
       "<body class=\"impress-not-supported\">"
     val rest = "<script src=\"impress-mini.js\"></script>" +
                "<script>impress().init();</script>" +

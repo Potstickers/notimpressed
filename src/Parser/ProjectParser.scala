@@ -35,9 +35,10 @@ object ProjectParser {
     val idxOfOpenBrkt = line.indexOf('{')
     val idxOfCloseBrkt = line.lastIndexOf('}')
     val attributes = new HashMap[String, String]()
-    val splitted = line.substring(idxOfOpenBrkt + 1, idxOfCloseBrkt).split(';')
+    val splitted = line.substring(idxOfOpenBrkt + 1,
+      idxOfCloseBrkt).split(';')
     for (av <- splitted) {
-      val splitAV = av.split(':')
+      val splitAV = av.split(":",2)
       attributes+=((splitAV(0), splitAV(1)))
     }
     new Step(attributes)
