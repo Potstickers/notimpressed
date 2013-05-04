@@ -8,13 +8,12 @@ import FileIO.Readers.WorkspaceReader
  * Context object. Tracks the current state of the program.
  * Main => User has not opened any projects.
  * Proj => User has opened a project.
- * Initialized at start of program. Heck, all objects are.
- * If you're a dev, and wondering what happens at all. Start here.
+ * In addition to the current workspace and project/presentation
  */
 object Context {
-  var currentState = States.Main
-  var curPres:Option[Project] = None
-  var curWorkspace: Option[Workspace] = {
+  var state = States.Main
+  var pres:Option[Project] = None
+  var workspace: Option[Workspace] = {
     val pathToWS = WorkspaceUtils.locateDefaultWorkspace()
     pathToWS match {
       case None => {
@@ -30,11 +29,14 @@ object Context {
     }
   }
 
+  /**
+   * Prints information about this Context.
+   */
   def tell() = {
-    println("Current state: " + currentState.toString)
+    println("Current state: " + state.toString)
     println("Current project: " +
-      {if(curPres.isDefined) curPres.get.title
+      {if(pres.isDefined) pres.get.title
       else "No project opened."})
-    println("Current workspace: " + curWorkspace.get.wsName)
+    println("Current workspace: " + workspace.get.wsName)
   }
 }

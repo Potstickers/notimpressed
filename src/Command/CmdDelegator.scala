@@ -9,7 +9,7 @@ import EnvStructs.{States, Context}
 object CmdDelegator {
 
   def execute(cmdArgs: (String, HashMap[String, String])) = {
-    Context.currentState match {
+    Context.state match {
       case States.Main => MainExecutor.execute(cmdArgs)
       case States.Proj => ProjExecutor.execute(cmdArgs)
     }

@@ -17,6 +17,7 @@ object ProjExecutor {
       case "close" => handleClose()
       case "new" => handleNew(cmdArgs._2)
       case "tell" => handleTell(cmdArgs._2)
+      case "remove" => handleRemove(cmdArgs._2)
       case cmd if (cmd.startsWith("css") ||
         cmd.startsWith("step")) => handleUpdate(cmd, cmdArgs._2)
       case _ => println("Command not recognized in this context.")
@@ -32,15 +33,15 @@ object ProjExecutor {
       args("item") match{
         case "step" =>
           if(args.contains("id"))
-            if(Context.curPres.get.getStep(args("id")).isDefined)
+            if(Context.pres.get.getStep(args("id")).isDefined)
               println("A step by that id already exists.")
             else
-              Context.curPres.get.addStep(args-("item"))
+              Context.pres.get.addStep(args-("item"))
           else
-            Context.curPres.get.addStep(args-("item"))
+            Context.pres.get.addStep(args-("item"))
         case "css" =>
           if (args.contains("name") && args("name").length > 0)
-            Context.curPres.get.cssRules += (
+            Context.pres.get.cssClasses += (
               new CSSClass(args("name"),
                 args-("name", "item")))
           else
@@ -62,7 +63,7 @@ object ProjExecutor {
     val key = item.substring(item.indexOf('(')+1,
               item.indexOf(')')).trim
     if(item.startsWith("css")){
-      val css = Context.curPres.get.getCSSClass(key)
+      val css = Context.pres.get.getCSSClass(key)
       if(css.isDefined)
         args.foreach(css.get.set)
       else{
@@ -76,7 +77,7 @@ object ProjExecutor {
         }
       }
     } else {
-      val step = Context.curPres.get.getStep(key)
+      val step = Context.pres.get.getStep(key)
       if(step.isDefined)
         args.foreach(step.get.set)
       else{
@@ -100,17 +101,17 @@ object ProjExecutor {
    * impress-mini.js file if needed.
    */
   private def handleCommit() {
-    ProjectWriter.writePresHTML(Context.curPres.get)
-    ProjectUtils.copyOverImpress(Context.curPres.get.homePath)
+    ProjectWriter.writePresHTML(Context.pres.get)
+    ProjectUtils.copyOverImpress(Context.pres.get.homePath)
   }
 
   /**
    * Saves all changes and returns to main state.
    */
   private def handleClose() {
-    ProjectWriter.write(Context.curPres.get)
-    Context.currentState = States.Main
-    Context.curPres = None
+    ProjectWriter.write(Context.pres.get)
+    Context.state = States.Main
+    Context.pres = None
   }
 
   /**
@@ -127,14 +128,14 @@ object ProjExecutor {
     }else{
       if(args.size == 1){
         if(args.contains("step")){
-          val step = Context.curPres.get
+          val step = Context.pres.get
             .getStep(args("step"))
           step match {
             case Some(s) => s.tell()
             case None => println("No step by that accessor found.")
           }
         }else if(args.contains("css")){
-          val cssClass = Context.curPres.get
+          val cssClass = Context.pres.get
             .getCSSClass(args("css"))
           cssClass match {
             case Some(c) => c.tell()
@@ -149,14 +150,29 @@ object ProjExecutor {
   }
 
   /**
+   * Removes a step or css class from current project.
+   * todo: in the case css => if no attributes are specified,
+   * delete entire class, else deletes individual rules.
+   * e.g. use case: misnamed attribute.
+   * @param args The arguments
+   */
+  def handleRemove(args:HashMap[String,String]) {
+    if(args.contains("step")||args.contains("css")){
+      println("Delete it yourself!")
+      //todo: finish implementing
+    } else {
+      println("Specify either a css or step.")
+    }
+  }
+  /**
    * Prints everything about the current project as a listing of
    * all the steps and css classes so far.
    * "Give them nothing! But take from them everything!"
    */
   private def listEverything() {
-    println("Current Project: " + Context.curPres.get.title)
-    println("Located in workspace: " + Context.curWorkspace.get.homePath)
-    Context.curPres.get.tell()
+    println("Current Project: " + Context.pres.get.title)
+    println("Located in workspace: " + Context.workspace.get.homePath)
+    Context.pres.get.tell()
   }
 
 }

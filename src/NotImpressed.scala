@@ -2,15 +2,22 @@ import Command.CmdDelegator
 import EnvStructs.{States, Context}
 import Parser._
 
+/**
+ * Main command loop.
+ */
 object NotImpressed {
 
   private def prompt() {
-    Context.currentState match {
-      case States.Main => print("@"+
-        Context.curWorkspace.get.wsName + "> ")
+    Context.state match {
+      case States.Main => print("@"+{
+        if(Context.workspace.isDefined)
+          Context.workspace.get.wsName
+        else
+          "\\Unspecified\\"
+      } + "> ")
       case States.Proj => print("@"+
-        Context.curWorkspace.get.wsName +
-        "["+Context.curPres.get.title + "]> ")
+        Context.workspace.get.wsName +
+        "["+Context.pres.get.title + "]> ")
     }
   }
 

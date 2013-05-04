@@ -6,11 +6,22 @@ import scala.annotation.tailrec
 
 //todo: add logic to rename project directory on title change
 //todo: robustness, item names must be valid (according to w3c)
+/**
+ * Defines a project object.
+ * @param homePath The path of the project's directory.
+ * @param title The name of this project.
+ * @param steps The set of steps of this project.
+ * @param cssClasses The set of css classes of this project.
+ */
 class Project (val homePath:String,
                var title:String,
                val steps:ArrayBuffer[Step],
-               val cssRules:ArrayBuffer[CSSClass]) {
-
+               val cssClasses:ArrayBuffer[CSSClass]) {
+  /**
+   * Adds a step.
+   * @param args the arguments.
+   *             see Step class for details.
+   */
   def addStep(args:HashMap[String,String]) {
     args+=(("class",
       if(args.contains("class")) {
@@ -83,8 +94,8 @@ class Project (val homePath:String,
     @tailrec
     def findStep(id:String, curIndex:Int):Int = {
       if(curIndex == steps.size) -1
-      else if(steps(curIndex).attributes.contains("id")
-        && steps(curIndex).attributes("id") == id)
+      else if(steps(curIndex).attributes.contains("id") &&
+        steps(curIndex).attributes("id") == id)
         curIndex
       else
         findStep(id, curIndex+1)
@@ -98,7 +109,7 @@ class Project (val homePath:String,
    * @return Some(css class) else None.
    */
   def getCSSClass(classname:String):Option[CSSClass] = {
-    cssRules.find(cssClass => cssClass.name == classname)
+    cssClasses.find(cssClass => cssClass.name == classname)
   }
 
   /**
@@ -111,7 +122,7 @@ class Project (val homePath:String,
       steps(i).tell()
     }
     println("CSS Classes:")
-    cssRules.foreach(_.tell())
+    cssClasses.foreach(_.tell())
   }
   //todo: make serialization less informal
   /**
@@ -132,7 +143,7 @@ class Project (val homePath:String,
    */
   def serializedCSS():String = {
     var str = ""
-    for(entry <- cssRules) {
+    for(entry <- cssClasses) {
       str+=(entry.toString()+System.lineSeparator())
     }
     str
@@ -146,14 +157,20 @@ class Project (val homePath:String,
   def html():String = {
     val head = "<!doctype html><html><head>" +
       "<link href=\"notimpressed.css\" rel=\"stylesheet\"></head>" +
-      "<body class=\"impress-not-supported\">"
+      "<body class=\"impress-not-supported background\">"
     val rest = "<script src=\"impress-mini.js\"></script>" +
                "<script>impress().init();</script>" +
                "</body></html>"
-    var impressBody = "<div id=\"impress\">" + System.lineSeparator()
-    for(step <- steps)
-      impressBody+=("\t"+step.toHTMLString + System.lineSeparator())
-    impressBody+="</div>"
+    val impressBody = {
+      @tailrec
+      def recAppend(s:String,elems:Traversable[Step]):String = {
+        elems match {
+          case rest if rest.isEmpty => s+"</div>" //why no mutable Nil?
+          case _ => recAppend(s+elems.head.toHTMLString, elems.tail)
+        }
+      }
+      recAppend("<div id=\"impress\">", steps)
+    }
     head+impressBody+rest
   }
 }

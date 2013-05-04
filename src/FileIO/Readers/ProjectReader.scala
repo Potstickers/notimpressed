@@ -9,7 +9,7 @@ import FileIO.{PathUtils, ProjectUtils}
 import Parser.ProjectParser
 
 /**
- * Project reader. Handles reading of project.
+ * Project reader. Handles reading of projects.
  */
 object ProjectReader {
   /**

@@ -7,8 +7,18 @@ import java.nio.charset._
 import collection.JavaConversions._
 import FileIO.{PathUtils, WorkspaceUtils}
 
+/**
+ * Workspace reader. Handles reading of workspaces.
+ */
 object WorkspaceReader {
-
+  /**
+   * Reads a workspace by looking in directory provided by paths.
+   * Reads from the notimpressed.ws file only instead of iterating
+   * over the directory since this file provides the same information:
+   * the absolute paths of the projects in this workspace.
+   * @param path the path to the workspace to be read.
+   * @return a workspace object on success, none otherwise.
+   */
   def read(path:String):Option[Workspace] = {
     val normalizedPath = PathUtils.normalizePath(path)
     val wsDir:Path = Paths.get(normalizedPath) //file is a directory in this context
@@ -18,7 +28,7 @@ object WorkspaceReader {
       val projList = Files.readAllLines(dirStream.iterator.next, StandardCharsets.UTF_8)
       dirStream.close()
       val convertedList = new ArrayBuffer[String](projList.size)
-      convertedList ++= projList.toBuffer
+      convertedList ++= projList.toList
       Some(new Workspace(realPath, convertedList))
     }catch{
       case nde:NotDirectoryException => {
